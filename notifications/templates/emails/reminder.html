@@ -1,0 +1,32 @@
+<h1>Reminder: Upcoming Interview</h1>
+
+<p>Dear {{ person.name }},</p>
+
+<p>This is a friendly reminder about your upcoming interview with {{ company.name }}.</p>
+
+<div class="warning-box">
+    <p><strong>Interview Details:</strong></p>
+    <ul>
+        <li><strong>Date:</strong> {{ interview_date }}</li>
+        <li><strong>Time:</strong> {{ interview_time }}</li>
+        <li><strong>Format:</strong> {{ format }}</li>
+        {% if meeting_link %}
+        <li><strong>Join Link:</strong> <a href="{{ meeting_link }}">Click Here to Join</a></li>
+        {% endif %}
+    </ul>
+</div>
+
+<a href="{{ meeting_link }}" class="button">Join Interview</a>
+
+<h2>Quick Tips</h2>
+<ul>
+    <li>Test your internet connection and audio/video beforehand</li>
+    <li>Join 5 minutes early</li>
+    <li>Have your resume and notes ready</li>
+</ul>
+
+<p>Looking forward to speaking with you!</p>
+
+<p>Best regards,<br>
+<strong>{{ company.name }}</strong></p>
+

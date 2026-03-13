@@ -1,0 +1,42 @@
+<h1>You're Invited for an Interview! 🎉</h1>
+
+<p>Dear {{ person.name }},</p>
+
+<p>We are pleased to invite you for an interview at <strong>{{ company.name }}</strong> for the position of <strong>{{ position }}</strong>.</p>
+
+<div class="info-box">
+    <p><strong>Interview Details:</strong></p>
+    <ul>
+        <li><strong>Date:</strong> {{ interview_date }}</li>
+        <li><strong>Time:</strong> {{ interview_time }}</li>
+        <li><strong>Duration:</strong> {{ duration }} minutes</li>
+        <li><strong>Format:</strong> {{ format }}</li>
+        {% if location %}
+        <li><strong>Location:</strong> {{ location }}</li>
+        {% endif %}
+        {% if meeting_link %}
+        <li><strong>Meeting Link:</strong> <a href="{{ meeting_link }}">Join Here</a></li>
+        {% endif %}
+    </ul>
+</div>
+
+<p>Please confirm your attendance by clicking the button below:</p>
+
+<a href="{{ confirmation_link }}" class="button">Confirm Attendance</a>
+
+<h2>What to Prepare</h2>
+<ul>
+    <li>Resume and portfolio (if applicable)</li>
+    <li>List of references</li>
+    <li>Questions about the role and company</li>
+</ul>
+
+<h2>Meet Your Interviewer</h2>
+<p><strong>{{ interviewer.name }}</strong>, {{ interviewer.role }}</p>
+
+<p>If you need to reschedule or have any questions, please reply to this email.</p>
+
+<p>We look forward to meeting you!</p>
+
+<p>Best regards,<br>
+<strong>{{ company.name }} Hiring Team</strong></p>

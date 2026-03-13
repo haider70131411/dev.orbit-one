@@ -1,0 +1,37 @@
+<h1>Interview Invitation 🎉</h1>
+
+<p>Dear {{ interviewee_name }},</p>
+
+<p>You have been invited to attend an interview at <strong>{{ company.name }}</strong>.</p>
+
+<div class="info-box">
+    <p><strong>Meeting Details:</strong></p>
+    <ul>
+        <li><strong>Title:</strong> {{ meeting_title }}</li>
+        <li><strong>Date:</strong> {{ meeting_date }}</li>
+        <li><strong>Time:</strong> {{ meeting_time }}</li>
+        <li><strong>Duration:</strong> {{ duration_minutes }} minutes</li>
+        <li><strong>Company:</strong> {{ company.name }}</li>
+    </ul>
+</div>
+
+<p>To join the meeting, click the button below:</p>
+
+<a href="{{ join_url }}" class="button">Join Meeting</a>
+
+<div class="warning-box">
+    <p><strong>Important Notes:</strong></p>
+    <ul>
+        <li>You will receive an OTP (One-Time Password) via email when you click the join link</li>
+        <li>Please verify the OTP to access the meeting room</li>
+        <li>You can join 15 minutes before the scheduled time</li>
+    </ul>
+</div>
+
+<p>If you have any questions or need to reschedule, please reply to this email.</p>
+
+<p>We look forward to meeting you!</p>
+
+<p>Best regards,<br>
+<strong>{{ company.name }} Team</strong></p>
+

@@ -1,0 +1,32 @@
+<h1>Interview Assignment 📅</h1>
+
+<p>Dear {{ interviewer_name }},</p>
+
+<p>You have been assigned to conduct an interview at <strong>{{ company.name }}</strong>.</p>
+
+<div class="info-box">
+    <p><strong>Meeting Details:</strong></p>
+    <ul>
+        <li><strong>Title:</strong> {{ meeting_title }}</li>
+        <li><strong>Candidate:</strong> {{ interviewee_name }}</li>
+        <li><strong>Email:</strong> {{ interviewee_email }}</li>
+        <li><strong>Date:</strong> {{ meeting_date }}</li>
+        <li><strong>Time:</strong> {{ meeting_time }}</li>
+        <li><strong>Duration:</strong> {{ duration_minutes }} minutes</li>
+        {% if other_interviewers %}
+        <li><strong>Other Interviewers:</strong> {{ other_interviewers }}</li>
+        {% endif %}
+    </ul>
+</div>
+
+<p>To join the meeting, click the button below:</p>
+
+<a href="{{ join_url }}" class="button">Join Meeting</a>
+
+<div class="success-box">
+    <p><strong>Note:</strong> You can join directly without OTP verification. You can join 15 minutes before the scheduled time.</p>
+</div>
+
+<p>Best regards,<br>
+<strong>{{ company.name }} Admin</strong></p>
+

@@ -1,0 +1,32 @@
+<h1>Welcome to {{ company.name }}! 🚀</h1>
+
+<p>Dear {{ person.name }},</p>
+
+<p>We're thrilled to have you join our team! This is the beginning of an exciting journey together.</p>
+
+<div class="success-box">
+    <p><strong>Your Start Date:</strong> {{ start_date }}</p>
+    <p><strong>Your Role:</strong> {{ role }}</p>
+    <p><strong>Reporting To:</strong> {{ manager }}</p>
+</div>
+
+<h2>What's Next?</h2>
+<ol>
+    <li><strong>Complete your onboarding:</strong> <a href="{{ onboarding_link }}">Start Here</a></li>
+    <li><strong>Set up your accounts:</strong> You'll receive credentials within 24 hours</li>
+    <li><strong>Review our handbook:</strong> <a href="{{ handbook_link }}">Company Handbook</a></li>
+</ol>
+
+<a href="{{ portal_link }}" class="button">Access Employee Portal</a>
+
+<h2>First Day Checklist</h2>
+<ul>
+    <li>Arrive at {{ arrival_time }}</li>
+    <li>Bring your ID and necessary documents</li>
+    <li>Meet your team at {{ team_location }}</li>
+</ul>
+
+<p>If you have any questions before your start date, feel free to reach out!</p>
+
+<p>Welcome aboard!<br>
+<strong>{{ company.name }} Team</strong></p>

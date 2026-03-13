@@ -1,0 +1,18 @@
+<h1>{{ notification_title }}</h1>
+
+<p>{{ greeting }}</p>
+
+{{ notification_content|safe }}
+
+{% if action_required %}
+<div class="warning-box">
+    <p><strong>Action Required:</strong> {{ action_description }}</p>
+</div>
+
+<a href="{{ action_link }}" class="button">{{ action_button_text }}</a>
+{% endif %}
+
+<p>{{ closing }}</p>
+
+<p>Best regards,<br>
+<strong>{{ company.name }}</strong></p>
