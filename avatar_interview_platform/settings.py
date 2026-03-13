@@ -134,7 +134,7 @@ WEBRTC_CONFIG = {
 # FILE STORAGE CONFIG
 # -----------------------------
 USE_R2 = os.getenv('USE_R2', '').lower() == 'true'
-# Remember this Required in Django 5+ we need to add this for central storage 
+# Central storage configuration using STORAGES (Django 5+)
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage" if USE_R2 else "django.core.files.storage.FileSystemStorage",
@@ -145,8 +145,6 @@ STORAGES = {
 }
 
 if USE_R2:
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
     AWS_ACCESS_KEY_ID = os.getenv('R2_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('R2_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('R2_BUCKET_NAME')
