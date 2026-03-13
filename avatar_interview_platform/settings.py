@@ -336,11 +336,7 @@ CELERY_BEAT_SCHEDULE = {
 
 
 
-# Logging Configuration
-# Ensure logs directory exists
-LOGS_DIR = BASE_DIR / 'logs'
-LOGS_DIR.mkdir(exist_ok=True)
-
+# Logging Configuration - console only (suitable for Railway)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -351,30 +347,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'app_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': str(LOGS_DIR / 'app.log'),
-            'formatter': 'verbose',
-        },
-        'emails_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': str(LOGS_DIR / 'emails.log'),
-            'formatter': 'verbose',
-        },
-        'django_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': str(LOGS_DIR / 'django.log'),
-            'formatter': 'verbose',
-        },
-        'celery_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': str(LOGS_DIR / 'celery.log'),
-            'formatter': 'verbose',
-        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -382,79 +354,20 @@ LOGGING = {
         },
     },
     'loggers': {
-        # App loggers - capture logs from meetings, notifications, avatars, etc.
-        'meetings': {
-            'handlers': ['app_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'notifications': {
-            'handlers': ['app_file', 'emails_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'avatars': {
-            'handlers': ['app_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'companies': {
-            'handlers': ['app_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'accounts': {
-            'handlers': ['app_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'shared': {
-            'handlers': ['app_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'system_admin': {
-            'handlers': ['app_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'avatar_interview_platform': {
-            'handlers': ['app_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        # Django framework logs
-        'django': {
-            'handlers': ['django_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['django_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'django.server': {
-            'handlers': ['django_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['django_file'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-        # Celery logs (when worker runs with Django settings)
-        'celery': {
-            'handlers': ['celery_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'celery.worker': {
-            'handlers': ['celery_file', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
+        'meetings':              {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'notifications':         {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'avatars':               {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'companies':             {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'accounts':              {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'shared':                {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'system_admin':          {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'avatar_interview_platform': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'django':                {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'django.request':        {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'django.server':         {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'django.db.backends':    {'handlers': ['console'], 'level': 'WARNING', 'propagate': False},
+        'celery':                {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        'celery.worker':         {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
     },
 }
 
