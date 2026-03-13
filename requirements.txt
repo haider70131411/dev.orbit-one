@@ -32,5 +32,8 @@ cryptography>=42.0.0
 # Validation & Utilities
 phonenumbers>=8.13.0
 
+# Images (required for ImageField)
+Pillow>=10.0.0
+
 # AI Services
 openai>=1.12.0
