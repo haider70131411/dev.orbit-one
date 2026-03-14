@@ -34,21 +34,16 @@ class NgrokAllowedOriginValidator(BaseMiddleware):
         if scope["type"] != "websocket":
             return await super().__call__(scope, receive, send)
         
-        print("DEBUG: NgrokAllowedOriginValidator called for websocket")
-        
         # Get the origin from headers
         origin = None
         for header_name, header_value in scope.get("headers", []):
             if header_name == b"origin":
                 origin = header_value.decode("utf-8")
                 break
-        
-        print(f"DEBUG: Connection origin: {origin}")
-        
+
         # Allow connections without origin (can happen in some cases, e.g., Postman, curl)
         if origin is None:
             logger.debug("WebSocket connection without origin header - allowing")
-            print("DEBUG: No origin - ensuring allowed")
             return await super().__call__(scope, receive, send)
         
         # Parse the origin URL
@@ -59,14 +54,20 @@ class NgrokAllowedOriginValidator(BaseMiddleware):
             # Get allowed hosts from settings
             allowed_hosts = getattr(settings, 'ALLOWED_HOSTS', [])
             debug_mode = getattr(settings, 'DEBUG', False)
-            
+            # Frontend origin (e.g. Vercel) - allow WebSocket connections from FRONTEND_URL
+            frontend_url = getattr(settings, 'FRONTEND_URL', '') or ''
+            frontend_host = urlparse(frontend_url).hostname if frontend_url else None
+            extra_origin_hosts = getattr(settings, 'WEBSOCKET_EXTRA_ALLOWED_ORIGIN_HOSTS', []) or []
+
             # Check if origin is allowed
-            # Allow ngrok domains, localhost, hosts in ALLOWED_HOSTS, or all origins in DEBUG mode
+            # Allow ngrok, localhost, ALLOWED_HOSTS, FRONTEND_URL host, extra list, or DEBUG
             is_allowed = (
                 debug_mode or  # In DEBUG mode, allow all origins for easier development
                 origin_host in allowed_hosts or
+                origin_host == frontend_host or
+                origin_host in extra_origin_hosts or
                 origin_host is None or
-                any(origin_host.endswith(domain) for domain in ['.ngrok-free.app', '.ngrok.io', '.ngrok.app', '.ngrok-free.app']) or
+                any(origin_host.endswith(domain) for domain in ['.ngrok-free.app', '.ngrok.io', '.ngrok.app', '.ngrok-free.app', '.vercel.app']) or
                 origin_host in ['localhost', '127.0.0.1'] or
                 '*' in allowed_hosts
             )

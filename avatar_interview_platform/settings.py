@@ -52,7 +52,11 @@ BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')
 # -----------------------------
 # FRONTEND URL
 # -----------------------------
-FRONTEND_URL = 'https://orbit-one-psi.vercel.app'
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://orbit-one-psi.vercel.app')
+# Extra hostnames allowed for WebSocket Origin (comma-separated); FRONTEND_URL host is always allowed
+WEBSOCKET_EXTRA_ALLOWED_ORIGIN_HOSTS = [
+    h.strip() for h in os.getenv('WEBSOCKET_EXTRA_ALLOWED_ORIGIN_HOSTS', '').split(',') if h.strip()
+]
 
 # -----------------------------
 # INSTALLED APPS
