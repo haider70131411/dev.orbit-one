@@ -42,12 +42,16 @@ class Avatar(models.Model):
     vrm_file = models.FileField(
         upload_to=avatar_vrm_path,
         validators=[FileExtensionValidator(allowed_extensions=['vrm'])],
-        help_text="VRM avatar file"
+        help_text="VRM avatar file",
+        blank=True,
+        null=True,
     )
     
     preview_image = models.ImageField(
         upload_to=avatar_image_path,
-        help_text="Preview image of the avatar"
+        help_text="Preview image of the avatar",
+        blank=True,
+        null=True,
     )
     
     description = models.TextField(

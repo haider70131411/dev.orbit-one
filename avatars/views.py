@@ -1,8 +1,9 @@
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status, filters, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -15,8 +16,108 @@ from .serializers import (
     AvatarUpdateSerializer
 )
 import logging
+import uuid
+import boto3
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+
+class AvatarUploadUrlView(APIView):
+    """
+    Issue a pre-signed POST URL for direct upload to R2/S3.
+    Admin-only; used by admin-frontend to upload VRM and preview image.
+    """
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        kind = request.data.get("kind")
+        content_type = request.data.get("content_type")
+
+        if kind not in ("vrm", "image") or not content_type:
+            return Response(
+                {"error": "kind ('vrm'|'image') and content_type are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        key_prefix = "avatars/vrm/" if kind == "vrm" else "avatars/images/"
+        # Keep extension simple; R2 key itself doesn't need real extension,
+        # but it's nice for debugging.
+        ext = ".vrm" if kind == "vrm" else ".png"
+        key = f"{key_prefix}{uuid.uuid4().hex}{ext}"
+
+        s3 = boto3.client(
+            "s3",
+            endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        )
+
+        try:
+            presigned = s3.generate_presigned_post(
+                Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                Key=key,
+                Fields={"Content-Type": content_type},
+                Conditions=[{"Content-Type": content_type}],
+                ExpiresIn=3600,
+            )
+        except Exception as e:
+            logger.error(f"Failed to generate presigned avatar upload URL: {e}")
+            return Response(
+                {"error": "Failed to generate upload URL"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        public_base = settings.AWS_S3_CUSTOM_DOMAIN or settings.R2_PUBLIC_URL
+        public_base = public_base.rstrip("/")
+        # If custom domain already includes protocol, keep as-is; otherwise add https://
+        if not public_base.startswith("http"):
+            public_base = f"https://{public_base}"
+        public_url = f"{public_base}/{key}"
+
+        return Response(
+            {
+                "upload_url": presigned["url"],
+                "fields": presigned["fields"],
+                "public_url": public_url,
+                "key": key,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class AvatarDirectCreateSerializer(serializers.ModelSerializer):
+    """
+    Create avatar when files are already uploaded to R2.
+    Only stores metadata + public URLs; does not touch FileFields.
+    """
+
+    class Meta:
+        model = Avatar
+        fields = [
+            "name",
+            "description",
+            "is_active",
+            "vrm_file_url",
+            "preview_image_url",
+            "vrm_file_size_bytes",
+        ]
+
+
+class AvatarDirectCreateView(APIView):
+    """
+    POST-only endpoint for creating avatars from direct-uploaded files.
+    Admin-only.
+    """
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = AvatarDirectCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        avatar = serializer.save()
+
+        detail = AvatarDetailSerializer(avatar, context={"request": request})
+        return Response(detail.data, status=status.HTTP_201_CREATED)
 
 
 class AvatarViewSet(viewsets.ModelViewSet):
