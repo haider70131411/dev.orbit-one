@@ -56,11 +56,14 @@ class AvatarUploadUrlView(APIView):
         )
 
         try:
-            presigned = s3.generate_presigned_post(
-                Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-                Key=key,
-                Fields={"Content-Type": content_type},
-                Conditions=[{"Content-Type": content_type}],
+            # R2 supports presigned PUT (S3 API), not browser POST form uploads
+            url = s3.generate_presigned_url(
+                "put_object",
+                Params={
+                    "Bucket": settings.AWS_STORAGE_BUCKET_NAME,
+                    "Key": key,
+                    "ContentType": content_type,
+                },
                 ExpiresIn=3600,
             )
         except Exception as e:
@@ -70,19 +73,18 @@ class AvatarUploadUrlView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        public_base = settings.AWS_S3_CUSTOM_DOMAIN or settings.R2_PUBLIC_URL
-        public_base = public_base.rstrip("/")
-        # If custom domain already includes protocol, keep as-is; otherwise add https://
+        public_base = settings.R2_PUBLIC_URL.rstrip("/")
         if not public_base.startswith("http"):
             public_base = f"https://{public_base}"
         public_url = f"{public_base}/{key}"
 
         return Response(
             {
-                "upload_url": presigned["url"],
-                "fields": presigned["fields"],
+                "upload_url": url,
                 "public_url": public_url,
                 "key": key,
+                "method": "PUT",
+                "content_type": content_type,
             },
             status=status.HTTP_200_OK,
         )
