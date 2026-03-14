@@ -172,9 +172,8 @@ class AvatarViewSet(viewsets.ModelViewSet):
             return AvatarDetailSerializer
         return AvatarListSerializer
     
-    @method_decorator(cache_page(60 * 15))
     def list(self, request, *args, **kwargs):
-        """List all active avatars with pagination"""
+        """List avatars. No cache so staff always see latest after direct-create."""
         return super().list(request, *args, **kwargs)
     
     @method_decorator(cache_page(60 * 15))
