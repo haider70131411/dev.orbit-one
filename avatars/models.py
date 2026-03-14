@@ -118,38 +118,32 @@ class Avatar(models.Model):
         super().save(*args, **kwargs)
     
     def _cache_file_metadata(self):
-        """Compute and cache file URLs and sizes - only called during file uploads/updates"""
-        # Cache VRM file URL and size
+        """
+        Compute and cache file URLs and sizes when FileFields are present.
+        When vrm_file/preview_image are not set (e.g. direct R2 upload path),
+        do NOT overwrite vrm_file_url/preview_image_url – they are set by the serializer.
+        """
+        # Cache VRM file URL and size only when we have a file
         if self.vrm_file:
             try:
-                # .url method returns full URL for R2, relative path for local storage
-                # Store as-is; serializers will handle making it absolute if needed
                 self.vrm_file_url = self.vrm_file.url
-                
-                # Cache file size
                 self.vrm_file_size_bytes = self.vrm_file.size
             except Exception as e:
-                # Handle errors gracefully (file might not exist yet)
-                # Only log if we're updating (pk exists)
                 if self.pk:
                     print(f"Warning: Could not cache VRM file metadata: {e}")
                 self.vrm_file_url = None
                 self.vrm_file_size_bytes = 0
-        else:
-            self.vrm_file_url = None
-            self.vrm_file_size_bytes = 0
-        
-        # Cache preview image URL
+        # else: leave vrm_file_url and vrm_file_size_bytes unchanged (direct-create sets them)
+
+        # Cache preview image URL only when we have an image
         if self.preview_image:
             try:
-                # .url method returns full URL for R2, relative path for local storage
                 self.preview_image_url = self.preview_image.url
             except Exception as e:
                 if self.pk:
                     print(f"Warning: Could not cache preview image URL: {e}")
                 self.preview_image_url = None
-        else:
-            self.preview_image_url = None
+        # else: leave preview_image_url unchanged (direct-create sets it)
     
     @property
     def vrm_file_size(self):
