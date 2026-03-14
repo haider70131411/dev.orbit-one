@@ -73,9 +73,8 @@ class AvatarUploadUrlView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        public_base = settings.R2_PUBLIC_URL.rstrip("/")
-        if not public_base.startswith("http"):
-            public_base = f"https://{public_base}"
+        # MEDIA_URL is already configured to point at the public R2 domain when USE_R2 is True
+        public_base = settings.MEDIA_URL.rstrip("/")
         public_url = f"{public_base}/{key}"
 
         return Response(
