@@ -130,7 +130,7 @@ class AvatarCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating new avatars"""
     vrm_file = serializers.FileField(
         validators=[FileExtensionValidator(allowed_extensions=['vrm'])],
-        help_text="VRM file (max 100MB)"
+        help_text="VRM file (max 30MB)"
     )
     
     preview_image = serializers.ImageField(
@@ -157,7 +157,9 @@ class AvatarCreateSerializer(serializers.ModelSerializer):
     
     def validate_vrm_file(self, value):
         """Validate VRM file size"""
-        max_size = 100 * 1024 * 1024  # 100MB
+        # On the Oracle Free Tier VM, very large VRM uploads can exhaust memory.
+        # Keep this lower so we reject too-big files with a 400 instead of OOM-killing Daphne.
+        max_size = 30 * 1024 * 1024  # 30MB
         if value.size > max_size:
             raise serializers.ValidationError(
                 f"VRM file size cannot exceed 100MB. Current size: {value.size / (1024*1024):.2f}MB"
@@ -223,7 +225,7 @@ class AvatarUpdateSerializer(serializers.ModelSerializer):
     
     def validate_vrm_file(self, value):
         """Validate VRM file size"""
-        max_size = 100 * 1024 * 1024  # 100MB
+        max_size = 30 * 1024 * 1024  # 30MB
         if value.size > max_size:
             raise serializers.ValidationError(
                 f"VRM file size cannot exceed 100MB. Current size: {value.size / (1024*1024):.2f}MB"
